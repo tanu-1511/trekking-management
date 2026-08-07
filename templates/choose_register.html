@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+
+<div class="text-center mt-5">
+
+    <h2>Create an Account</h2>
+
+    <p class="text-muted">
+        Choose how you want to register.
+    </p>
+
+    <div class="mt-4">
+
+        <a href="/register/trekker" class="btn btn-success btn-lg me-3">
+            Register as Trekker
+        </a>
+
+        <a href="/register/staff" class="btn btn-outline-success btn-lg">
+            Register as Staff
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}
