@@ -18,25 +18,29 @@ Login
 
             <div class="card-body">
 
-                <form>
+                <form method="POST">
 
                     <div class="mb-3">
                         <label>Email</label>
                         <input
                             type="email"
+                            name="email"
                             class="form-control"
-                            placeholder="Enter your email">
+                            placeholder="Enter your email"
+                            required>
                     </div>
 
                     <div class="mb-3">
                         <label>Password</label>
                         <input
                             type="password"
+                            name="password"
                             class="form-control"
-                            placeholder="Enter your password">
+                            placeholder="Enter your password"
+                            required>
                     </div>
 
-                    <button class="btn btn-success w-100">
+                    <button type="submit" class="btn btn-success w-100">
                         Login
                     </button>
 

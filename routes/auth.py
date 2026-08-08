@@ -1,11 +1,28 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask_login import login_user
 from models.user import User
 from extensions import db, bcrypt
 auth = Blueprint("auth", __name__)
 
 
-@auth.route("/login")
+@auth.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        user = User.query.filter_by(email=email).first()
+        if user and bcrypt.check_password_hash(user.password, password):
+            if user.blacklisted:
+                flash("Your account has been blacklisted. Please contact support.", "danger")
+                return render_template("login.html")
+            if not user.approved:
+                flash("Your account is awaiting approval. Please wait for admin approval.", "warning")
+                return render_template("login.html")
+            login_user(user)
+            flash("Logged in successfully!", "success")
+            return redirect(url_for("home"))
+        else:
+            flash("Invalid email or password.", "danger")
     return render_template("login.html")
 
 
