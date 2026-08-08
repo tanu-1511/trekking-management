@@ -1,37 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
+<title>{% block title %}Trekking Management{% endblock %}</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>{% block title %}Trekking Management{% endblock %}</title>
+<nav class="navbar navbar-expand-lg navbar-dark bg-success">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+    <div class="container">
 
-<body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-
-        <div class="container">
-
-            <a class="navbar-brand" href="/">
-                🥾 Trekking Management
-            </a>
-
-        </div>
-
-    </nav>
-
-    <div class="container mt-4">
-
-        {% block content %}
-
-        {% endblock %}
+        <a class="navbar-brand" href="/">
+            🥾 Trekking Management
+        </a>
 
     </div>
 
-</body>
+</nav>
 
-</html>
+<div class="container mt-4">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+
+    {% endblock %}
+
+</div>

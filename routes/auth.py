@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, flash
 from models.user import User
 from extensions import db, bcrypt
 auth = Blueprint("auth", __name__)
@@ -23,7 +23,13 @@ def register_trekker():
         email = request.form.get("email")
         phone = request.form.get("phone")
         password = request.form.get("password")
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("An account with this email already exists.", "danger")
+            return render_template("register_trekker.html")
+
+        hashed_password= bcrypt.generate_password_hash(password).decode("utf-8")
         new_user = User(
             name=name,
             email=email,
