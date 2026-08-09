@@ -105,7 +105,26 @@ def register_staff():
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 @admin.route("/dashboard")
 def dashboard():
-    return render_template("admin/dashboard.html")
+
+    total_treks = Trek.query.count()
+
+    total_users = User.query.filter_by(
+        role="user"
+    ).count()
+
+    total_staff = User.query.filter_by(
+        role="staff"
+    ).count()
+
+    total_bookings = Booking.query.count()
+
+    return render_template(
+        "admin/dashboard.html",
+        total_treks=total_treks,
+        total_users=total_users,
+        total_staff=total_staff,
+        total_bookings=total_bookings
+    )
 
 staff = Blueprint("staff", __name__, url_prefix="/staff")
 @staff.route("/dashboard")

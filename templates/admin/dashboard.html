@@ -6,66 +6,75 @@ Admin Dashboard
 
 {% block content %}
 
-<div class="text-center mb-4">
+<div class="mb-4">
     <h2>Admin Dashboard</h2>
-    <p>Welcome, Administrator!</p>
+    <p>Overview of the trekking management system.</p>
 </div>
 
 <div class="row g-4">
 
-    <div class="col-md-6">
-        <div class="card shadow h-100">
-            <div class="card-body text-center">
-                <h4>Manage Treks</h4>
-                <p>Create, edit and manage trekking programs.</p>
-
-                <a href="{{ url_for('admin.manage_treks') }}" class="btn btn-success">
-                    Manage Treks
-                </a>
+    <div class="col-md-3">
+        <div class="card shadow text-center">
+            <div class="card-body">
+                <h5>Total Treks</h5>
+                <h2>{{ total_treks }}</h2>
             </div>
         </div>
     </div>
 
-
-    <div class="col-md-6">
-        <div class="card shadow h-100">
-            <div class="card-body text-center">
-                <h4>Manage Users</h4>
-                <p>View users and manage their accounts.</p>
-
-                <a href="{{ url_for('admin.manage_users') }}" class="btn btn-success">
-                    Manage Users
-                </a>
+    <div class="col-md-3">
+        <div class="card shadow text-center">
+            <div class="card-body">
+                <h5>Total Users</h5>
+                <h2>{{ total_users }}</h2>
             </div>
         </div>
     </div>
 
-
-    <div class="col-md-6">
-        <div class="card shadow h-100">
-            <div class="card-body text-center">
-                <h4>Manage Staff</h4>
-                <p>Approve staff and manage staff assignments.</p>
-
-                <a href="{{ url_for('admin.manage_staff') }}" class="btn btn-success">
-                    Manage Staff
-                </a>
+    <div class="col-md-3">
+        <div class="card shadow text-center">
+            <div class="card-body">
+                <h5>Total Staff</h5>
+                <h2>{{ total_staff }}</h2>
             </div>
         </div>
     </div>
 
-
-    <div class="col-md-6">
-        <div class="card shadow h-100">
-            <div class="card-body text-center">
-                <h4>Bookings</h4>
-                <p>View and manage trek bookings.</p>
-
-                <a href="#" class="btn btn-success">
-                    View Bookings
-                </a>
+    <div class="col-md-3">
+        <div class="card shadow text-center">
+            <div class="card-body">
+                <h5>Total Bookings</h5>
+                <h2>{{ total_bookings }}</h2>
             </div>
         </div>
+    </div>
+
+</div>
+
+<div class="mt-5">
+
+    <h3>Management</h3>
+
+    <div class="d-flex gap-2 flex-wrap">
+
+        <a
+            href="{{ url_for('admin.manage_treks') }}"
+            class="btn btn-success">
+            Manage Treks
+        </a>
+
+        <a
+            href="{{ url_for('admin.manage_users') }}"
+            class="btn btn-primary">
+            Manage Users
+        </a>
+
+        <a
+            href="{{ url_for('admin.manage_staff') }}"
+            class="btn btn-warning">
+            Manage Staff
+        </a>
+
     </div>
 
 </div>

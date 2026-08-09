@@ -11,6 +11,29 @@ Manage Users
     <p>View and manage registered users.</p>
 </div>
 
+<form method="GET" class="mb-4">
+
+    <div class="input-group">
+
+        <input
+            type="text"
+            name="q"
+            class="form-control"
+            placeholder="Search user by name or ID"
+            value="{{ search }}">
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+
+            Search
+
+        </button>
+
+    </div>
+
+</form>
+
 {% if users %}
 
 <div class="row g-4">
@@ -24,6 +47,11 @@ Manage Users
             <div class="card-body">
 
                 <h4>{{ user.name }}</h4>
+
+                <p>
+                    <strong>User ID:</strong>
+                    {{ user.id }}
+                </p>
 
                 <p>
                     <strong>Email:</strong>
@@ -45,6 +73,7 @@ Manage Users
                         </span>
 
                         <div class="mt-2">
+
                             <form
                                 method="POST"
                                 action="{{ url_for('admin.unblacklist_user', user_id=user.id) }}"
@@ -53,10 +82,13 @@ Manage Users
                                 <button
                                     type="submit"
                                     class="btn btn-success">
+
                                     Remove Blacklist
+
                                 </button>
 
                             </form>
+
                         </div>
 
                     {% else %}
@@ -66,6 +98,7 @@ Manage Users
                         </span>
 
                         <div class="mt-2">
+
                             <form
                                 method="POST"
                                 action="{{ url_for('admin.blacklist_user', user_id=user.id) }}"
@@ -81,6 +114,7 @@ Manage Users
                                 </button>
 
                             </form>
+
                         </div>
 
                     {% endif %}

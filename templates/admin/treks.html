@@ -10,6 +10,25 @@ Manage Treks
 
     <h2>Manage Treks</h2>
 
+    <form method="GET" class="mb-4">
+        <div class="input-group">
+
+            <input
+                type="text"
+                name="q"
+                class="form-control"
+               placeholder="Search trek by name or ID"
+              value="{{ search }}">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+                Search
+            </button>
+
+        </div>
+    </form>
+
     <a href="{{ url_for('admin.create_trek') }}" class="btn btn-success">
         + Create Trek
     </a>
