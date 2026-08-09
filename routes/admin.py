@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from models.trek import Trek
+from models.user import User
 from extensions import db
 from datetime import datetime
 
@@ -100,3 +101,24 @@ def delete_trek(trek_id):
     db.session.commit()
 
     return redirect(url_for("admin.manage_treks"))
+
+@admin.route("/staff")
+def manage_staff():
+
+    staff_members = User.query.filter_by(role="staff").all()
+
+    return render_template(
+        "admin/staff.html",
+        staff_members=staff_members
+    )
+
+@admin.route("/staff/approve/<int:staff_id>", methods=["POST"])
+def approve_staff(staff_id):
+
+    staff = User.query.get_or_404(staff_id)
+
+    staff.approved = True
+
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_staff"))

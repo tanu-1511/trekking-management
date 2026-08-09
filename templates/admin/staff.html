@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Staff
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>Manage Staff</h2>
+    <p>View and manage staff accounts.</p>
+</div>
+
+
+{% if staff_members %}
+
+    <div class="row g-4">
+
+        {% for staff in staff_members %}
+
+            <div class="col-md-6">
+
+                <div class="card shadow h-100">
+
+                    <div class="card-body">
+
+                        <h4>{{ staff.name }}</h4>
+
+                        <p>
+                            <strong>Email:</strong>
+                            {{ staff.email }}
+                        </p>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            {{ staff.phone }}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+
+                            {% if staff.approved %}
+                                <span class="badge bg-success">
+                                    Approved
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending Approval
+                                </span>
+                            {% endif %}
+
+                        </p>
+
+                        {% if not staff.approved %}
+
+                            <form
+                            method="POST"
+                            action="{{ url_for('admin.approve_staff', staff_id=staff.id) }}"
+                            style="display: inline;">
+
+                            <button type="submit" class="btn btn-success">
+                                Approve
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% else %}
+
+    <div class="alert alert-info">
+        No staff accounts found.
+    </div>
+
+{% endif %}
+
+{% endblock %}
