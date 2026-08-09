@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>My Bookings</h2>
+    <p>View your trekking bookings.</p>
+</div>
+
+{% if bookings %}
+
+<div class="row g-4">
+
+    {% for booking in bookings %}
+
+    <div class="col-md-6">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body">
+
+                <h4>{{ booking.trek.name }}</h4>
+
+                <p>
+                    <strong>Location:</strong>
+                    {{ booking.trek.location }}
+                </p>
+
+                <p>
+                    <strong>Start Date:</strong>
+                    {{ booking.trek.start_date }}
+                </p>
+
+                <p>
+                    <strong>End Date:</strong>
+                    {{ booking.trek.end_date }}
+                </p>
+
+                <p>
+                    <strong>Booking Date:</strong>
+                    {{ booking.booking_date }}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    {% if booking.status == "Booked" %}
+                        <span class="badge bg-success">
+                            Booked
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            {{ booking.status }}
+                        </span>
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+    You have no bookings yet.
+</div>
+
+{% endif %}
+
+{% endblock %}
