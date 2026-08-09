@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Trek
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow">
+
+    <div class="card-header bg-warning">
+        <h3 class="text-center">
+            Manage Trek
+        </h3>
+    </div>
+
+    <div class="card-body">
+
+        <h4>{{ trek.name }}</h4>
+
+        <p>
+            <strong>Location:</strong>
+            {{ trek.location }}
+        </p>
+
+        <p>
+            <strong>Difficulty:</strong>
+            {{ trek.difficulty }}
+        </p>
+
+        <p>
+            <strong>Start Date:</strong>
+            {{ trek.start_date }}
+        </p>
+
+        <p>
+            <strong>End Date:</strong>
+            {{ trek.end_date }}
+        </p>
+
+        <form method="POST">
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Available Slots
+                </label>
+
+                <input
+                    type="number"
+                    name="available_slots"
+                    class="form-control"
+                    value="{{ trek.available_slots }}"
+                    min="0"
+                    required>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Trek Status
+                </label>
+
+                <select
+                    name="status"
+                    class="form-select"
+                    required>
+
+                    <option
+                        value="Open"
+                        {% if trek.status == "Open" %}selected{% endif %}>
+                        Open
+                    </option>
+
+                    <option
+                        value="Closed"
+                        {% if trek.status == "Closed" %}selected{% endif %}>
+                        Closed
+                    </option>
+
+                    <option
+                        value="Started"
+                        {% if trek.status == "Started" %}selected{% endif %}>
+                        Started
+                    </option>
+
+                    <option
+                        value="Completed"
+                        {% if trek.status == "Completed" %}selected{% endif %}>
+                        Completed
+                    </option>
+
+                </select>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary w-100">
+
+                Save Changes
+
+            </button>
+
+        </form>
+
+        <div class="mt-3">
+
+            <a
+                href="{{ url_for('staff.dashboard') }}"
+                class="btn btn-secondary">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

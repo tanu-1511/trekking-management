@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}
+Trek Participants
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+    <h2>{{ trek.name }} - Participants</h2>
+
+    <p>
+        <strong>Location:</strong>
+        {{ trek.location }}
+    </p>
+
+    <p>
+        <strong>Start Date:</strong>
+        {{ trek.start_date }}
+    </p>
+
+    <p>
+        <strong>End Date:</strong>
+        {{ trek.end_date }}
+    </p>
+
+</div>
+
+{% if participants %}
+
+<div class="row g-4">
+
+    {% for participant in participants %}
+
+    <div class="col-md-6">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body">
+
+                <h4>{{ participant.user.name }}</h4>
+
+                <p>
+                    <strong>User ID:</strong>
+                    {{ participant.user.id }}
+                </p>
+
+                <p>
+                    <strong>Email:</strong>
+                    {{ participant.user.email }}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    {{ participant.user.phone }}
+                </p>
+
+                <p>
+                    <strong>Booking ID:</strong>
+                    {{ participant.booking.id }}
+                </p>
+
+                <p>
+                    <strong>Booking Date:</strong>
+                    {{ participant.booking.booking_date }}
+                </p>
+
+                <p>
+                    <strong>Booking Status:</strong>
+
+                    <span class="badge bg-success">
+                        {{ participant.booking.status }}
+                    </span>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+    No participants have booked this trek yet.
+</div>
+
+{% endif %}
+
+<div class="mt-4">
+
+    <a
+        href="{{ url_for('staff.dashboard') }}"
+        class="btn btn-secondary">
+
+        Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

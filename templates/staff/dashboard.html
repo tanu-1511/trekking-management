@@ -7,14 +7,18 @@ Staff Dashboard
 {% block content %}
 
 <div class="mb-4">
+
     <h2>Welcome to the Staff Dashboard</h2>
 
     <p>
         You are logged in as a Staff member.
     </p>
+
 </div>
 
-<h3 class="mb-3">My Assigned Treks</h3>
+<h3 class="mb-3">
+    My Assigned Treks
+</h3>
 
 {% if treks %}
 
@@ -56,6 +60,11 @@ Staff Dashboard
                 </p>
 
                 <p>
+                    <strong>Registered Participants:</strong>
+                    {{ participant_counts[trek.id] }}
+                </p>
+
+                <p>
                     <strong>Status:</strong>
                     {{ trek.status }}
                 </p>
@@ -68,6 +77,22 @@ Staff Dashboard
                 </p>
 
                 {% endif %}
+
+                <a
+                    href="{{ url_for('staff.participants', trek_id=trek.id) }}"
+                    class="btn btn-primary mt-2">
+
+                    View Participants
+
+                </a>
+
+                <a
+                    href="{{ url_for('staff.edit_trek', trek_id=trek.id) }}"
+                    class="btn btn-warning mt-2">
+
+                    Manage Trek
+
+                </a>
 
             </div>
 

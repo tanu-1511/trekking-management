@@ -6,16 +6,15 @@ My Bookings
 
 {% block content %}
 
-<div class="mb-4">
-    <h2>My Bookings</h2>
-    <p>View your trekking bookings.</p>
-</div>
+<h2 class="mb-4">
+    My Bookings
+</h2>
 
-{% if bookings %}
+{% if booking_data %}
 
 <div class="row g-4">
 
-    {% for booking in bookings %}
+    {% for item in booking_data %}
 
     <div class="col-md-6">
 
@@ -23,39 +22,98 @@ My Bookings
 
             <div class="card-body">
 
-                <h4>{{ booking.trek.name }}</h4>
+                <h4>
+                    {{ item.trek.name }}
+                </h4>
+
+                <p>
+                    <strong>Booking ID:</strong>
+                    {{ item.booking.id }}
+                </p>
 
                 <p>
                     <strong>Location:</strong>
-                    {{ booking.trek.location }}
+                    {{ item.trek.location }}
+                </p>
+
+                <p>
+                    <strong>Difficulty:</strong>
+                    {{ item.trek.difficulty }}
                 </p>
 
                 <p>
                     <strong>Start Date:</strong>
-                    {{ booking.trek.start_date }}
+                    {{ item.trek.start_date }}
                 </p>
 
                 <p>
                     <strong>End Date:</strong>
-                    {{ booking.trek.end_date }}
+                    {{ item.trek.end_date }}
                 </p>
 
                 <p>
                     <strong>Booking Date:</strong>
-                    {{ booking.booking_date }}
+                    {{ item.booking.booking_date }}
                 </p>
 
                 <p>
-                    <strong>Status:</strong>
+                    <strong>Booking Status:</strong>
 
-                    {% if booking.status == "Booked" %}
+                    {% if item.booking.status == "Booked" %}
+
                         <span class="badge bg-success">
                             Booked
                         </span>
-                    {% else %}
-                        <span class="badge bg-secondary">
-                            {{ booking.status }}
+
+                    {% elif item.booking.status == "Cancelled" %}
+
+                        <span class="badge bg-danger">
+                            Cancelled
                         </span>
+
+                    {% elif item.booking.status == "Completed" %}
+
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            {{ item.booking.status }}
+                        </span>
+
+                    {% endif %}
+
+                </p>
+
+                <p>
+                    <strong>Trek Status:</strong>
+
+                    {% if item.trek.status == "Open" %}
+
+                        <span class="badge bg-success">
+                            Open
+                        </span>
+
+                    {% elif item.trek.status == "Started" %}
+
+                        <span class="badge bg-warning text-dark">
+                            Started
+                        </span>
+
+                    {% elif item.trek.status == "Completed" %}
+
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary">
+                            {{ item.trek.status }}
+                        </span>
+
                     {% endif %}
 
                 </p>
@@ -73,7 +131,7 @@ My Bookings
 {% else %}
 
 <div class="alert alert-info">
-    You have no bookings yet.
+    You have not booked any treks yet.
 </div>
 
 {% endif %}

@@ -1,4 +1,14 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    redirect,
+    url_for
+)
+
+from flask_login import login_required
+
+from routes.auth import role_required
 
 from models.trek import Trek
 from models.user import User
@@ -23,6 +33,8 @@ admin = Blueprint(
 # =========================
 
 @admin.route("/dashboard")
+@login_required
+@role_required("admin")
 def dashboard():
 
     total_treks = Trek.query.count()
@@ -51,9 +63,14 @@ def dashboard():
 # =========================
 
 @admin.route("/treks")
+@login_required
+@role_required("admin")
 def manage_treks():
 
-    search = request.args.get("q", "").strip()
+    search = request.args.get(
+        "q",
+        ""
+    ).strip()
 
     if search:
 
@@ -62,14 +79,18 @@ def manage_treks():
             treks = Trek.query.filter(
                 or_(
                     Trek.id == int(search),
-                    Trek.name.ilike(f"%{search}%")
+                    Trek.name.ilike(
+                        f"%{search}%"
+                    )
                 )
             ).all()
 
         else:
 
             treks = Trek.query.filter(
-                Trek.name.ilike(f"%{search}%")
+                Trek.name.ilike(
+                    f"%{search}%"
+                )
             ).all()
 
     else:
@@ -83,14 +104,27 @@ def manage_treks():
     )
 
 
-@admin.route("/treks/create", methods=["GET", "POST"])
+@admin.route(
+    "/treks/create",
+    methods=["GET", "POST"]
+)
+@login_required
+@role_required("admin")
 def create_trek():
 
     if request.method == "POST":
 
-        name = request.form.get("name")
-        location = request.form.get("location")
-        difficulty = request.form.get("difficulty")
+        name = request.form.get(
+            "name"
+        )
+
+        location = request.form.get(
+            "location"
+        )
+
+        difficulty = request.form.get(
+            "difficulty"
+        )
 
         start_date = datetime.strptime(
             request.form.get("start_date"),
@@ -103,11 +137,18 @@ def create_trek():
         ).date()
 
         available_slots = int(
-            request.form.get("available_slots")
+            request.form.get(
+                "available_slots"
+            )
         )
 
-        status = request.form.get("status")
-        description = request.form.get("description")
+        status = request.form.get(
+            "status"
+        )
+
+        description = request.form.get(
+            "description"
+        )
 
         new_trek = Trek(
             name=name,
@@ -120,11 +161,16 @@ def create_trek():
             description=description
         )
 
-        db.session.add(new_trek)
+        db.session.add(
+            new_trek
+        )
+
         db.session.commit()
 
         return redirect(
-            url_for("admin.manage_treks")
+            url_for(
+                "admin.manage_treks"
+            )
         )
 
     return render_template(
@@ -136,18 +182,25 @@ def create_trek():
     "/treks/edit/<int:trek_id>",
     methods=["GET", "POST"]
 )
+@login_required
+@role_required("admin")
 def edit_trek(trek_id):
 
-    trek = Trek.query.get_or_404(trek_id)
+    trek = Trek.query.get_or_404(
+        trek_id
+    )
 
     staff_members = User.query.filter_by(
         role="staff",
-        approved=True
+        approved=True,
+        blacklisted=False
     ).all()
 
     if request.method == "POST":
 
-        trek.name = request.form.get("name")
+        trek.name = request.form.get(
+            "name"
+        )
 
         trek.location = request.form.get(
             "location"
@@ -168,7 +221,9 @@ def edit_trek(trek_id):
         ).date()
 
         trek.available_slots = int(
-            request.form.get("available_slots")
+            request.form.get(
+                "available_slots"
+            )
         )
 
         trek.status = request.form.get(
@@ -196,7 +251,9 @@ def edit_trek(trek_id):
         db.session.commit()
 
         return redirect(
-            url_for("admin.manage_treks")
+            url_for(
+                "admin.manage_treks"
+            )
         )
 
     return render_template(
@@ -210,17 +267,24 @@ def edit_trek(trek_id):
     "/treks/delete/<int:trek_id>",
     methods=["POST"]
 )
+@login_required
+@role_required("admin")
 def delete_trek(trek_id):
 
     trek = Trek.query.get_or_404(
         trek_id
     )
 
-    db.session.delete(trek)
+    db.session.delete(
+        trek
+    )
+
     db.session.commit()
 
     return redirect(
-        url_for("admin.manage_treks")
+        url_for(
+            "admin.manage_treks"
+        )
     )
 
 
@@ -229,6 +293,8 @@ def delete_trek(trek_id):
 # =========================
 
 @admin.route("/staff")
+@login_required
+@role_required("admin")
 def manage_staff():
 
     search = request.args.get(
@@ -276,6 +342,8 @@ def manage_staff():
     "/staff/approve/<int:staff_id>",
     methods=["POST"]
 )
+@login_required
+@role_required("admin")
 def approve_staff(staff_id):
 
     staff = User.query.get_or_404(
@@ -287,7 +355,55 @@ def approve_staff(staff_id):
     db.session.commit()
 
     return redirect(
-        url_for("admin.manage_staff")
+        url_for(
+            "admin.manage_staff"
+        )
+    )
+
+
+@admin.route(
+    "/staff/blacklist/<int:staff_id>",
+    methods=["POST"]
+)
+@login_required
+@role_required("admin")
+def blacklist_staff(staff_id):
+
+    staff = User.query.get_or_404(
+        staff_id
+    )
+
+    staff.blacklisted = True
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "admin.manage_staff"
+        )
+    )
+
+
+@admin.route(
+    "/staff/unblacklist/<int:staff_id>",
+    methods=["POST"]
+)
+@login_required
+@role_required("admin")
+def unblacklist_staff(staff_id):
+
+    staff = User.query.get_or_404(
+        staff_id
+    )
+
+    staff.blacklisted = False
+
+    db.session.commit()
+
+    return redirect(
+        url_for(
+            "admin.manage_staff"
+        )
     )
 
 
@@ -296,6 +412,8 @@ def approve_staff(staff_id):
 # =========================
 
 @admin.route("/users")
+@login_required
+@role_required("admin")
 def manage_users():
 
     search = request.args.get(
@@ -343,6 +461,8 @@ def manage_users():
     "/users/blacklist/<int:user_id>",
     methods=["POST"]
 )
+@login_required
+@role_required("admin")
 def blacklist_user(user_id):
 
     user = User.query.get_or_404(
@@ -354,7 +474,9 @@ def blacklist_user(user_id):
     db.session.commit()
 
     return redirect(
-        url_for("admin.manage_users")
+        url_for(
+            "admin.manage_users"
+        )
     )
 
 
@@ -362,6 +484,8 @@ def blacklist_user(user_id):
     "/users/unblacklist/<int:user_id>",
     methods=["POST"]
 )
+@login_required
+@role_required("admin")
 def unblacklist_user(user_id):
 
     user = User.query.get_or_404(
@@ -373,38 +497,24 @@ def unblacklist_user(user_id):
     db.session.commit()
 
     return redirect(
-        url_for("admin.manage_users")
-    )
-
-@admin.route(
-    "/staff/blacklist/<int:staff_id>",
-    methods=["POST"]
-)
-def blacklist_staff(staff_id):
-
-    staff = User.query.get_or_404(staff_id)
-
-    staff.blacklisted = True
-
-    db.session.commit()
-
-    return redirect(
-        url_for("admin.manage_staff")
+        url_for(
+            "admin.manage_users"
+        )
     )
 
 
-@admin.route(
-    "/staff/unblacklist/<int:staff_id>",
-    methods=["POST"]
-)
-def unblacklist_staff(staff_id):
+# =========================
+# ALL BOOKINGS
+# =========================
 
-    staff = User.query.get_or_404(staff_id)
+@admin.route("/bookings")
+@login_required
+@role_required("admin")
+def manage_bookings():
 
-    staff.blacklisted = False
+    bookings = Booking.query.all()
 
-    db.session.commit()
-
-    return redirect(
-        url_for("admin.manage_staff")
+    return render_template(
+        "admin/bookings.html",
+        bookings=bookings
     )

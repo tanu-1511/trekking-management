@@ -1,57 +1,226 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from flask_login import login_user
+from functools import wraps
+
+from flask import (
+    Blueprint,
+    render_template,
+    request,
+    flash,
+    redirect,
+    url_for
+)
+
+from flask_login import login_user, current_user
+
 from models.user import User
 from extensions import db, bcrypt
-auth = Blueprint("auth", __name__)
 
 
-@auth.route("/login", methods=["GET", "POST"])
+auth = Blueprint(
+    "auth",
+    __name__
+)
+
+
+# =========================
+# ROLE PROTECTION
+# =========================
+
+def role_required(role):
+
+    def decorator(function):
+
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+
+            # User is not logged in
+            if not current_user.is_authenticated:
+
+                return redirect(
+                    url_for("auth.login")
+                )
+
+            # Wrong role
+            if current_user.role != role:
+
+                return "Unauthorized", 403
+
+            # Blacklisted account
+            if current_user.blacklisted:
+
+                return "Unauthorized", 403
+
+            # Staff must be approved
+            if (
+                current_user.role == "staff"
+                and not current_user.approved
+            ):
+
+                return "Unauthorized", 403
+
+            return function(
+                *args,
+                **kwargs
+            )
+
+        return wrapper
+
+    return decorator
+
+
+# =========================
+# LOGIN
+# =========================
+
+@auth.route(
+    "/login",
+    methods=["GET", "POST"]
+)
 def login():
-    if request.method == "POST":
-        email = request.form.get("email")
-        password = request.form.get("password")
-        user = User.query.filter_by(email=email).first()
-        if user and bcrypt.check_password_hash(user.password, password):
-            if user.blacklisted:
-                flash("Your account has been blacklisted. Please contact support.", "danger")
-                return render_template("login.html")
-            if not user.approved:
-                flash("Your account is awaiting approval. Please wait for admin approval.", "warning")
-                return render_template("login.html")
-            login_user(user)
-            flash("Logged in successfully!", "success")
-            if user.role == "admin":
-                return redirect(url_for("admin.dashboard"))
-            elif user.role == "staff":
-                return redirect(url_for("staff.dashboard"))
-            else:
-                return redirect(url_for("user.dashboard"))
-        else:
-            flash("Invalid email or password.", "danger")
-    return render_template("login.html")
 
+    if request.method == "POST":
+
+        email = request.form.get(
+            "email"
+        )
+
+        password = request.form.get(
+            "password"
+        )
+
+        user = User.query.filter_by(
+            email=email
+        ).first()
+
+        if user and bcrypt.check_password_hash(
+            user.password,
+            password
+        ):
+
+            # Blacklisted users cannot log in
+            if user.blacklisted:
+
+                flash(
+                    "Your account has been blacklisted. Please contact support.",
+                    "danger"
+                )
+
+                return render_template(
+                    "login.html"
+                )
+
+            # Only staff need admin approval
+            if (
+                user.role == "staff"
+                and not user.approved
+            ):
+
+                flash(
+                    "Your account is awaiting approval. Please wait for admin approval.",
+                    "warning"
+                )
+
+                return render_template(
+                    "login.html"
+                )
+
+            login_user(user)
+
+            flash(
+                "Logged in successfully!",
+                "success"
+            )
+
+            if user.role == "admin":
+
+                return redirect(
+                    url_for("admin.dashboard")
+                )
+
+            elif user.role == "staff":
+
+                return redirect(
+                    url_for("staff.dashboard")
+                )
+
+            else:
+
+                return redirect(
+                    url_for("user.dashboard")
+                )
+
+        else:
+
+            flash(
+                "Invalid email or password.",
+                "danger"
+            )
+
+    return render_template(
+        "login.html"
+    )
+
+
+# =========================
+# REGISTRATION CHOICE
+# =========================
 
 @auth.route("/register")
 def choose_register():
-    return render_template("choose_register.html")
+
+    return render_template(
+        "choose_register.html"
+    )
 
 
-@auth.route("/register/trekker", methods=["GET", "POST"])
+# =========================
+# TREKKER REGISTRATION
+# =========================
+
+@auth.route(
+    "/register/trekker",
+    methods=["GET", "POST"]
+)
 def register_trekker():
 
     if request.method == "POST":
 
-        name = request.form.get("name")
-        email = request.form.get("email")
-        phone = request.form.get("phone")
-        password = request.form.get("password")
+        name = request.form.get(
+            "name"
+        )
 
-        existing_user = User.query.filter_by(email=email).first()
+        email = request.form.get(
+            "email"
+        )
+
+        phone = request.form.get(
+            "phone"
+        )
+
+        password = request.form.get(
+            "password"
+        )
+
+        existing_user = User.query.filter_by(
+            email=email
+        ).first()
+
         if existing_user:
-            flash("An account with this email already exists.", "danger")
-            return render_template("register_trekker.html")
 
-        hashed_password= bcrypt.generate_password_hash(password).decode("utf-8")
+            flash(
+                "An account with this email already exists.",
+                "danger"
+            )
+
+            return render_template(
+                "register_trekker.html"
+            )
+
+        hashed_password = (
+            bcrypt.generate_password_hash(
+                password
+            ).decode("utf-8")
+        )
+
         new_user = User(
             name=name,
             email=email,
@@ -61,26 +230,71 @@ def register_trekker():
             approved=True,
             blacklisted=False
         )
-        db.session.add(new_user)
+
+        db.session.add(
+            new_user
+        )
+
         db.session.commit()
+
         return render_template(
             "registration_success.html",
             message="Your trekker account has been created. You can now log in."
         )
-    return render_template("register_trekker.html")
+
+    return render_template(
+        "register_trekker.html"
+    )
 
 
-@auth.route("/register/staff", methods=["GET", "POST"])
+# =========================
+# STAFF REGISTRATION
+# =========================
+
+@auth.route(
+    "/register/staff",
+    methods=["GET", "POST"]
+)
 def register_staff():
 
     if request.method == "POST":
 
-        name = request.form.get("name")
-        email = request.form.get("email")
-        phone = request.form.get("phone")
-        password = request.form.get("password")
+        name = request.form.get(
+            "name"
+        )
 
-        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        email = request.form.get(
+            "email"
+        )
+
+        phone = request.form.get(
+            "phone"
+        )
+
+        password = request.form.get(
+            "password"
+        )
+
+        existing_user = User.query.filter_by(
+            email=email
+        ).first()
+
+        if existing_user:
+
+            flash(
+                "An account with this email already exists.",
+                "danger"
+            )
+
+            return render_template(
+                "register_staff.html"
+            )
+
+        hashed_password = (
+            bcrypt.generate_password_hash(
+                password
+            ).decode("utf-8")
+        )
 
         new_staff = User(
             name=name,
@@ -92,7 +306,10 @@ def register_staff():
             blacklisted=False
         )
 
-        db.session.add(new_staff)
+        db.session.add(
+            new_staff
+        )
+
         db.session.commit()
 
         return render_template(
@@ -100,38 +317,6 @@ def register_staff():
             message="Your staff account has been created and is awaiting admin approval."
         )
 
-    return render_template("register_staff.html")
-
-admin = Blueprint("admin", __name__, url_prefix="/admin")
-@admin.route("/dashboard")
-def dashboard():
-
-    total_treks = Trek.query.count()
-
-    total_users = User.query.filter_by(
-        role="user"
-    ).count()
-
-    total_staff = User.query.filter_by(
-        role="staff"
-    ).count()
-
-    total_bookings = Booking.query.count()
-
     return render_template(
-        "admin/dashboard.html",
-        total_treks=total_treks,
-        total_users=total_users,
-        total_staff=total_staff,
-        total_bookings=total_bookings
+        "register_staff.html"
     )
-
-staff = Blueprint("staff", __name__, url_prefix="/staff")
-@staff.route("/dashboard")
-def dashboard():
-    return render_template("staff/dashboard.html")
-
-user = Blueprint("user", __name__, url_prefix="/user")
-@user.route("/dashboard")
-def dashboard():
-    return render_template("user/dashboard.html")
