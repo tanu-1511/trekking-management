@@ -60,6 +60,11 @@ def edit_trek(trek_id):
 
     trek = Trek.query.get_or_404(trek_id)
 
+    staff_members = User.query.filter_by(
+        role="staff",
+        approved=True
+    ).all()
+
     if request.method == "POST":
 
         trek.name = request.form.get("name")
@@ -83,13 +88,21 @@ def edit_trek(trek_id):
         trek.status = request.form.get("status")
         trek.description = request.form.get("description")
 
+        assigned_staff_id = request.form.get("assigned_staff_id")
+
+        if assigned_staff_id:
+            trek.assigned_staff_id = int(assigned_staff_id)
+        else:
+            trek.assigned_staff_id = None
+
         db.session.commit()
 
         return redirect(url_for("admin.manage_treks"))
 
     return render_template(
         "admin/edit_trek.html",
-        trek=trek
+        trek=trek,
+        staff_members=staff_members
     )
 
 @admin.route("/treks/delete/<int:trek_id>", methods=["POST"])
