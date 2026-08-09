@@ -76,9 +76,17 @@ Manage Treks
                                 Edit
                             </a>
 
-                            <button class="btn btn-danger">
-                                Delete
-                            </button>
+                            <form
+                                method="POST"
+                                action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}"
+                                style="display: inline;">
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this trek?');">
+                                    Delete
+                                </button>
+                            </form>
 
                         </div>
 

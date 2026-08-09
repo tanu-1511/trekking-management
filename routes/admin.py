@@ -90,3 +90,13 @@ def edit_trek(trek_id):
         "admin/edit_trek.html",
         trek=trek
     )
+
+@admin.route("/treks/delete/<int:trek_id>", methods=["POST"])
+def delete_trek(trek_id):
+
+    trek = Trek.query.get_or_404(trek_id)
+
+    db.session.delete(trek)
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_treks"))
