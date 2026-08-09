@@ -122,3 +122,35 @@ def approve_staff(staff_id):
     db.session.commit()
 
     return redirect(url_for("admin.manage_staff"))
+
+@admin.route("/users")
+def manage_users():
+
+    users = User.query.filter_by(role="user").all()
+
+    return render_template(
+        "admin/users.html",
+        users=users
+    )
+
+@admin.route("/users/blacklist/<int:user_id>", methods=["POST"])
+def blacklist_user(user_id):
+
+    user = User.query.get_or_404(user_id)
+
+    user.blacklisted = True
+
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_users"))
+
+@admin.route("/users/unblacklist/<int:user_id>", methods=["POST"])
+def unblacklist_user(user_id):
+
+    user = User.query.get_or_404(user_id)
+
+    user.blacklisted = False
+
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_users"))

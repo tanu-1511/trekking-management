@@ -33,7 +33,7 @@ Admin Dashboard
                 <h4>Manage Users</h4>
                 <p>View users and manage their accounts.</p>
 
-                <a href="{{ url_for('admin.manage_staff') }}" class="btn btn-success">
+                <a href="{{ url_for('admin.manage_users') }}" class="btn btn-success">
                     Manage Users
                 </a>
             </div>
@@ -47,7 +47,7 @@ Admin Dashboard
                 <h4>Manage Staff</h4>
                 <p>Approve staff and manage staff assignments.</p>
 
-                <a href="#" class="btn btn-success">
+                <a href="{{ url_for('admin.manage_staff') }}" class="btn btn-success">
                     Manage Staff
                 </a>
             </div>

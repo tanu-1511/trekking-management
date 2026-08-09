@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Users
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2>Manage Users</h2>
+    <p>View and manage registered users.</p>
+</div>
+
+{% if users %}
+
+<div class="row g-4">
+
+    {% for user in users %}
+
+    <div class="col-md-6">
+
+        <div class="card shadow h-100">
+
+            <div class="card-body">
+
+                <h4>{{ user.name }}</h4>
+
+                <p>
+                    <strong>Email:</strong>
+                    {{ user.email }}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    {{ user.phone }}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    {% if user.blacklisted %}
+
+                        <span class="badge bg-danger">
+                            Blacklisted
+                        </span>
+
+                        <div class="mt-2">
+                            <form
+                                method="POST"
+                                action="{{ url_for('admin.unblacklist_user', user_id=user.id) }}"
+                                style="display: inline;">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success">
+                                    Remove Blacklist
+                                </button>
+
+                            </form>
+                        </div>
+
+                    {% else %}
+
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+
+                        <div class="mt-2">
+                            <form
+                                method="POST"
+                                action="{{ url_for('admin.blacklist_user', user_id=user.id) }}"
+                                style="display: inline;">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to blacklist this user?');">
+
+                                    Blacklist
+
+                                </button>
+
+                            </form>
+                        </div>
+
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="alert alert-info">
+    No registered users found.
+</div>
+
+{% endif %}
+
+{% endblock %}

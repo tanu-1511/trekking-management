@@ -57,7 +57,7 @@ def register_trekker():
             email=email,
             phone=phone,
             password=hashed_password,
-            role="trekker",
+            role="user",
             approved=True,
             blacklisted=False
         )
