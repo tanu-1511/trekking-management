@@ -20,7 +20,12 @@ def login():
                 return render_template("login.html")
             login_user(user)
             flash("Logged in successfully!", "success")
-            return redirect(url_for("home"))
+            if user.role == "admin":
+                return redirect(url_for("admin.dashboard"))
+            elif user.role == "staff":
+                return redirect(url_for("staff.dashboard"))
+            else:
+                return redirect(url_for("user.dashboard"))
         else:
             flash("Invalid email or password.", "danger")
     return render_template("login.html")
@@ -96,3 +101,18 @@ def register_staff():
         )
 
     return render_template("register_staff.html")
+
+admin = Blueprint("admin", __name__, url_prefix="/admin")
+@admin.route("/dashboard")
+def dashboard():
+    return render_template("admin/dashboard.html")
+
+staff = Blueprint("staff", __name__, url_prefix="/staff")
+@staff.route("/dashboard")
+def dashboard():
+    return render_template("staff/dashboard.html")
+
+user = Blueprint("user", __name__, url_prefix="/user")
+@user.route("/dashboard")
+def dashboard():
+    return render_template("user/dashboard.html")
