@@ -3,8 +3,8 @@ import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
-    SECRET_KEY = "this-will-be-changed-later"
-
+    SECRET_KEY = "trekking-management-secret-key-2026-change-this"
+    
     SQLALCHEMY_DATABASE_URI = (
         "sqlite:///" + os.path.join(BASE_DIR, "instance", "trekking.db")
     )
