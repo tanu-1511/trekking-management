@@ -54,3 +54,39 @@ def create_trek():
 
     return render_template("admin/create_trek.html")
 
+@admin.route("/treks/edit/<int:trek_id>", methods=["GET", "POST"])
+def edit_trek(trek_id):
+
+    trek = Trek.query.get_or_404(trek_id)
+
+    if request.method == "POST":
+
+        trek.name = request.form.get("name")
+        trek.location = request.form.get("location")
+        trek.difficulty = request.form.get("difficulty")
+
+        trek.start_date = datetime.strptime(
+            request.form.get("start_date"),
+            "%Y-%m-%d"
+        ).date()
+
+        trek.end_date = datetime.strptime(
+            request.form.get("end_date"),
+            "%Y-%m-%d"
+        ).date()
+
+        trek.available_slots = int(
+            request.form.get("available_slots")
+        )
+
+        trek.status = request.form.get("status")
+        trek.description = request.form.get("description")
+
+        db.session.commit()
+
+        return redirect(url_for("admin.manage_treks"))
+
+    return render_template(
+        "admin/edit_trek.html",
+        trek=trek
+    )
